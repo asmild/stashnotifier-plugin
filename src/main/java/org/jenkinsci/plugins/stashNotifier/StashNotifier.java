@@ -1024,6 +1024,7 @@ public class StashNotifier extends Notifier implements SimpleBuildStep {
 
         JSONObject json = new JSONObject();
         json.put("state", state.name());
+        json.put("parent", abbreviate(getBuildParent(run), MAX_FIELD_LENGTH));
         json.put("key", abbreviate(getBuildKey(run, listener), MAX_FIELD_LENGTH));
         json.put("name", abbreviate(getBuildName(run), MAX_FIELD_LENGTH));
         json.put("description", abbreviate(getBuildDescription(run, state), MAX_FIELD_LENGTH));
@@ -1122,6 +1123,18 @@ public class StashNotifier extends Notifier implements SimpleBuildStep {
         } else {
             return run.getFullDisplayName();
         }
+    }
+
+    /**
+     * Returns the parent key to be pushed. This is the full name of the Jenkins job
+     * that owns the run, providing a stable identifier across builds for use with
+     * Bitbucket's required builds merge check.
+     *
+     * @param run the run to notify Bitbucket of
+     * @return the full name of the Jenkins job that owns the run
+     */
+    protected String getBuildParent(final Run<?, ?> run) {
+        return run.getParent().getFullName();
     }
 
     /**
